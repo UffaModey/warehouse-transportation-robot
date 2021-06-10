@@ -17,7 +17,7 @@ void right(){
   digitalWrite(IN2, HIGH);
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, LOW);
-  Serial.println("go forward!");
+  Serial.println("go right!");
 }
 
 void left(){
@@ -27,7 +27,7 @@ void left(){
   digitalWrite(IN2, LOW);
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, HIGH);
-  Serial.println("go back!");
+  Serial.println("go left!");
 }
 
 void forward(){
@@ -37,7 +37,7 @@ void forward(){
   digitalWrite(IN2, LOW);
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
-  Serial.println("go left!");
+  Serial.println("go forward!");
 }
 
 void back(){
@@ -47,7 +47,7 @@ void back(){
   digitalWrite(IN2, HIGH);
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW); 
-  Serial.println("go right!");
+  Serial.println("go back!");
 } 
 
 void stop(){
