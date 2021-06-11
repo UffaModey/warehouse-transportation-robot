@@ -46,7 +46,7 @@ void loop()
 {
  int distance = sonar.ping_cm();
 
- while (distance < 10){
+ while (distance < distanceTresh){
   
   svr=analogRead(sr);
   svl=analogRead(sl);
@@ -54,22 +54,22 @@ void loop()
   Serial.println(svr);
   Serial.println(svl);
 
-  if(svl < sensorTresh && svr < sensorTresh)
+  if(svl < trackingTresh && svr < trackingTresh)
   {
   forward(); 
   }
 
-  if(svl > sensorTresh && svr < sensorTresh)
+  if(svl > trackingTresh && svr < trackingTresh)
   {
   left(); 
   }
  
-  if(svl < sensorTresh && svr > sensorTresh)
+  if(svl < trackingTresh && svr > trackingTresh)
   { 
   right(); 
   }
   
-  if(svl> sensorTresh && svr> sensorTresh)
+  if(svl> trackingTresh && svr> trackingTresh)
   {
   stop(); 
   }
