@@ -1,91 +1,113 @@
-//www.elegoo.com
+int mr1=9;  //motor right 1
+int mr2=11;  //motor right 2
+int ml1=7; //motor left 1
+int ml2=8; //motor left 2
+int sr=A0;   //sensor right
+int sl=A2;   //sensor left
+int svr=0;
+int svl=0;
+int led=13;
+int enr=6; 
+int enl=5;
 
-//Line Tracking IO define
-#define LT_R !digitalRead(A0)
-#define LT_M !digitalRead(A1)
-#define LT_L !digitalRead(A2)
+int vspeed=50;    
+int tspeed=100;
+int tdelay=20;
 
-#define ENA 5
-#define ENB 6
-#define IN1 7
-#define IN2 8
-#define IN3 9
-#define IN4 11
+int sensorTresh= 100;
 
-#define carSpeed 100
+void setup()
+{
+ Serial.begin(9600);
 
-void right(){
-  analogWrite(ENA, carSpeed);
-  analogWrite(ENB, carSpeed);
-  digitalWrite(IN1, HIGH);
-  digitalWrite(IN2, HIGH);
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, LOW);
-  Serial.println("go right!");
+ pinMode(mr1,OUTPUT);
+ pinMode(mr2,OUTPUT);
+ pinMode(ml1,OUTPUT);
+ pinMode(ml2,OUTPUT);
+ pinMode(led,OUTPUT);
+ pinMode(sr,INPUT);
+ pinMode(sl,INPUT);
+ 
+ delay(5000);
 }
 
-void left(){
-  analogWrite(ENA, carSpeed);
-  analogWrite(ENB, carSpeed);
-  digitalWrite(IN1, LOW);
-  digitalWrite(IN2, LOW);
-  digitalWrite(IN3, HIGH);
-  digitalWrite(IN4, HIGH);
-  Serial.println("go left!");
-}
+void loop()
+{
 
-void forward(){
-  analogWrite(ENA, carSpeed);
-  analogWrite(ENB, carSpeed);
-  digitalWrite(IN1, HIGH);
-  digitalWrite(IN2, LOW);
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, HIGH);
-  Serial.println("go forward!");
-}
+ 
+ svr=analogRead(sr);
+ svl=analogRead(sl);
+ delay(0);
 
-void back(){
-  analogWrite(ENA, carSpeed);
-  analogWrite(ENB, carSpeed);
-  digitalWrite(IN1, LOW);
-  digitalWrite(IN2, HIGH);
-  digitalWrite(IN3, HIGH);
-  digitalWrite(IN4, LOW); 
-  Serial.println("go back!");
-} 
+ Serial.println(svr);
+ Serial.println(svl);
 
-void stop(){
-   digitalWrite(ENA, LOW);
-   digitalWrite(ENB, LOW);
-   Serial.println("Stop!");
-} 
-
-void setup(){
-  
-
-  pinMode(ENA, OUTPUT);
-  pinMode(ENB, OUTPUT);
-  pinMode(IN1,OUTPUT);
-  pinMode(IN2,OUTPUT);
-  pinMode(IN3,OUTPUT);
-  pinMode(IN4,OUTPUT);
-  
-  Serial.begin(9600);
-  pinMode(LT_R,INPUT);
-  pinMode(LT_M,INPUT);
-  pinMode(LT_L,INPUT);
-}
-
-void loop() {
-  if(LT_M){
-    forward();
+ 
+  if(svl < sensorTresh && svr < sensorTresh)
+  {
+  forward(); 
   }
-  else if(LT_R) { 
-    right();
-    while(LT_R);                             
-  }   
-  else if(LT_L) {
-    left();
-    while(LT_L);  
+
+  if(svl > sensorTresh && svr < sensorTresh)
+  {
+  left(); 
+  }
+ 
+  if(svl < sensorTresh && svr > sensorTresh)
+  { 
+  right(); 
+  }
+  
+  if(svl> sensorTresh && svr> sensorTresh)
+  {
+  stop(); 
   }
 }
+
+void forward()
+ {
+  digitalWrite(mr1,LOW);
+  digitalWrite(mr2,HIGH);
+  digitalWrite(ml1,HIGH);
+  digitalWrite(ml2,LOW);
+  analogWrite (enr,vspeed);
+  analogWrite (enl,vspeed);
+ } 
+
+void backward()
+ {
+  digitalWrite(mr1,HIGH);
+  digitalWrite(mr2,LOW);
+  digitalWrite(ml1,LOW);
+  digitalWrite(ml2,HIGH);
+  analogWrite (enr,vspeed);
+  analogWrite (enl,vspeed);
+ }
+
+void right()
+ {
+  digitalWrite(mr1,LOW);
+  digitalWrite(mr2,LOW);
+  digitalWrite(ml1,HIGH);
+  digitalWrite(ml2,HIGH);
+  analogWrite (enr,tspeed);
+  analogWrite (enl,tspeed);
+  delay(tdelay);
+ } 
+
+void left()
+ {
+  digitalWrite(mr1,HIGH);
+  digitalWrite(mr2,HIGH);
+  digitalWrite(ml1,LOW);
+  digitalWrite(ml2,LOW);
+  analogWrite (enr,tspeed);
+  analogWrite (enl,tspeed);
+  delay(tdelay);
+}  
+
+void stop()
+ {
+  analogWrite (enr,0);
+  analogWrite (enl,0);
+ }
