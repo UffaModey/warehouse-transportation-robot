@@ -1,3 +1,13 @@
+#include <NewPing.h>
+
+#define TRIGGER_PIN 13
+
+#define ECHO_PIN 12
+
+#define MAX_DISTANCE 200
+
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);
+
 int mr1=9;  //motor right 1
 int mr2=11;  //motor right 2
 int ml1=7; //motor left 1
@@ -10,21 +20,16 @@ int led=13;
 int enr=6; 
 int enl=5;
 
-int vspeed=80;    
-int tspeed=150;
+int vspeed=50;    
+int tspeed=100;
 int tdelay=20;
 
-const int trigPin = 13;
-const int echoPin = 12;
-
-float duration;
-float distance;
-float obstacle;
+int trackingTresh = 100; //the tracking sensors uses this figure to differentiate between surfaces
+int distanceTresh = 10; //ultasonic sensor treshold for detecting obstacles in cm
 
 void setup()
 {
-  
-Serial.begin(9600);
+ Serial.begin(9600);
 
  pinMode(mr1,OUTPUT);
  pinMode(mr2,OUTPUT);
@@ -39,44 +44,45 @@ Serial.begin(9600);
 
 void loop()
 {
- 
+ int distance = sonar.ping_cm();
 
-  obstacle = ultrasonicSensor();
-  while (obstacle != 1){
+ while (distance < 10){
+  
+  svr=analogRead(sr);
+  svl=analogRead(sl);
 
- svr=digitalRead(sr);
- svl=digitalRead(sl);
+  Serial.println(svr);
+  Serial.println(svl);
 
- Serial.println(svr);
- Serial.println(svl);
-    
-  if(svl==LOW && svr==LOW)
+  if(svl < sensorTresh && svr < sensorTresh)
   {
   forward(); 
   }
 
-  if(svl==HIGH && svr==LOW)
+  if(svl > sensorTresh && svr < sensorTresh)
   {
   left(); 
   }
  
-  if(svl==LOW && svr==HIGH)
+  if(svl < sensorTresh && svr > sensorTresh)
   { 
   right(); 
   }
   
-  if(svl==HIGH && svr==HIGH)
+  if(svl> sensorTresh && svr> sensorTresh)
   {
   stop(); 
   }
-    }
   
+  }
+ 
+ 
 }
 
 void forward()
  {
-  digitalWrite(mr1,HIGH);
-  digitalWrite(mr2,LOW);
+  digitalWrite(mr1,LOW);
+  digitalWrite(mr2,HIGH);
   digitalWrite(ml1,HIGH);
   digitalWrite(ml2,LOW);
   analogWrite (enr,vspeed);
@@ -85,8 +91,8 @@ void forward()
 
 void backward()
  {
-  digitalWrite(mr1,LOW);
-  digitalWrite(mr2,HIGH);
+  digitalWrite(mr1,HIGH);
+  digitalWrite(mr2,LOW);
   digitalWrite(ml1,LOW);
   digitalWrite(ml2,HIGH);
   analogWrite (enr,vspeed);
@@ -96,9 +102,9 @@ void backward()
 void right()
  {
   digitalWrite(mr1,LOW);
-  digitalWrite(mr2,HIGH);
+  digitalWrite(mr2,LOW);
   digitalWrite(ml1,HIGH);
-  digitalWrite(ml2,LOW);
+  digitalWrite(ml2,HIGH);
   analogWrite (enr,tspeed);
   analogWrite (enl,tspeed);
   delay(tdelay);
@@ -107,9 +113,9 @@ void right()
 void left()
  {
   digitalWrite(mr1,HIGH);
-  digitalWrite(mr2,LOW);
+  digitalWrite(mr2,HIGH);
   digitalWrite(ml1,LOW);
-  digitalWrite(ml2,HIGH);
+  digitalWrite(ml2,LOW);
   analogWrite (enr,tspeed);
   analogWrite (enl,tspeed);
   delay(tdelay);
@@ -120,19 +126,3 @@ void stop()
   analogWrite (enr,0);
   analogWrite (enl,0);
  }
-
- float ultrasonicSensor (){
-   digitalWrite(trigPin, LOW);
-   delayMicroseconds(2);
-   digitalWrite(trigPin, HIGH);
-   delayMicroseconds(20);
-   digitalWrite(trigPin, LOW);
-
-   duration = pulseIn(echoPin, HIGH);
-
-   distance = duration * 0.034 / 2;
-  
-   Serial.println(distance);
-
-   return distance;
-  }
